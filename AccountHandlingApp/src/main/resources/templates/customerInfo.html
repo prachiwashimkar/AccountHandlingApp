@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+      <title> Spring Boot Thymeleaf </title>
+      <link rel="stylesheet" th:href="@{/styles.css}"/>
+      <script type="text/javascript" th:src="@{/script.js}"></script>
+      <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.js"></script> -->
+	  <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<script type="text/javascript">
+
+
+	function makeUpdate(id){
+//		alert('update row = ' + id);
+		
+		$('tr').find('td:nth-child(1)').filter(function() {
+			return $(this).text() == id;
+		}).parent().css('background-color', '#FFE5B4');
+
+		$('tr').find('td:nth-child(1)').filter(function() {
+			return $(this).text() == id;
+		}).parent().find('#updateButton').attr('disabled', true);
+		
+		$('tr').find('td:nth-child(1)').filter(function() {
+			return $(this).text() == id;
+		}).parent().find('#saveButton').attr('disabled', false);
+		
+		$('tr').find('td:nth-child(1)').filter(function() {
+			return $(this).text() == id;
+		}).parent().find('#cancelButton').attr('disabled', false);
+		
+		$('tr').find('td:nth-child(1)').filter(function() {
+			return $(this).text() == id;
+		}).parent().find('td').attr('contenteditable', true);
+		
+	}
+	
+	function makeDelete(id){
+//		alert('Deleting id - '+id);
+		
+		let request = new XMLHttpRequest();
+		request.open('DELETE', '/deleteCustomer/'+id);
+		request.send();
+		request.onload = () => {
+			if(request.status == 200){
+				window.location = '/customers';
+			}
+		}
+	}
+	
+	function cancelIt(id){
+		
+		let request = new XMLHttpRequest();
+		request.open('GET', '/customers/'+id);
+		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		request.responseType = 'json';
+		request.send();
+		request.onload = () => {
+			if(request.status == 200){
+				window.location = '/customers';
+			}
+		}
+		
+		$('tr').find('td:nth-child(1)').filter(function() {
+			return $(this).text() == id;
+		}).parent().css('background-color', '#FFFFFF');
+
+		$('tr').find('td:nth-child(1)').filter(function() {
+			return $(this).text() == id;
+		}).parent().find('#updateButton').attr('disabled', false);
+		
+		$('tr').find('td:nth-child(1)').filter(function() {
+			return $(this).text() == id;
+		}).parent().find('#saveButton').attr('disabled', true);
+		
+		$('tr').find('td:nth-child(1)').filter(function() {
+			return $(this).text() == id;
+		}).parent().find('#cancelButton').attr('disabled', true);
+		
+		$('tr').find('td:nth-child(1)').filter(function() {
+			return $(this).text() == id;
+		}).parent().find('td').attr('contenteditable', false);
+	}
+	
+	function saveIt(id){
+		
+//		alert('save clicked' + id);
+//		alert($('tr').eq(id).find('td#fname').html());
+		
+		var data = {
+				'customerId': id,
+				'firstName': $('tr').find('td:nth-child(1)').filter(function() {return $(this).text() == id;}).parent().find('td#fname').html(),
+				'lastName': $('tr').find('td:nth-child(1)').filter(function() {return $(this).text() == id;}).parent().find('td#lname').html(),
+				'address': $('tr').find('td:nth-child(1)').filter(function() {return $(this).text() == id;}).parent().find('td#addr').html(),
+				'phoneNumber': $('tr').find('td:nth-child(1)').filter(function() {return $(this).text() == id;}).parent().find('td#phnum').html(),
+				'amount': $('tr').find('td:nth-child(1)').filter(function() {return $(this).text() == id;}).parent().find('td#amt').html()
+				};
+		
+		var jsonObject = JSON.stringify(data);
+//		alert(jsonObject);
+		
+		let request = new XMLHttpRequest();
+		
+		request.open('PUT', '/updateCustomer/'+id);
+		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		request.send(jsonObject);
+		request.onload = () => {
+			if(request.status == 200){
+				//alert('response is 200');
+				window.location = '/customers';
+			}
+		}
+		
+		
+		
+		$('tr').find('td:nth-child(1)').filter(function() {
+			return $(this).text() == id;
+		}).parent().css('background-color', '#FFFFFF');
+
+		$('tr').find('td:nth-child(1)').filter(function() {
+			return $(this).text() == id;
+		}).parent().find('#updateButton').attr('disabled', false);
+		
+		$('tr').find('td:nth-child(1)').filter(function() {
+			return $(this).text() == id;
+		}).parent().find('#saveButton').attr('disabled', true);
+		
+		$('tr').find('td:nth-child(1)').filter(function() {
+			return $(this).text() == id;
+		}).parent().find('#cancelButton').attr('disabled', true);
+		
+		$('tr').find('td:nth-child(1)').filter(function() {
+			return $(this).text() == id;
+		}).parent().find('td').attr('contenteditable', false);
+		
+		/*
+		$('tr').eq(id).css('background-color', '#FFFFFF');
+		$('tr').eq(id).find('#updateButton').attr('disabled', false);
+		$('tr').eq(id).find('#saveButton').attr('disabled', true);
+		$('tr').eq(id).find('#cancelButton').attr('disabled', true);
+		$('tr').eq(id).find('td').attr('contenteditable', false);
+		*/
+		
+	}
+</script>
+
+<body>
+   <h1>User Details</h1>
+   
+    <table id="table" border="1"> 
+        <tr>
+           <th>Customer Id</th>
+           <th>First name</th>
+           <th>Last name</th>
+           <th>Address</th>
+           <th>Phone Number</th>
+           <th>Amount</th>
+        </tr>
+        
+        <tr th:each="customer : ${allCustomers}" >
+	      <td contenteditable="false" id="custId" th:text="${customer.customerId}" >Customer Id</td>
+		  <td contenteditable="false" id="fname" th:text="${customer.firstName}">First name</td>
+		  <td contenteditable="false" id="lname" th:text="${customer.lastName}">Last name</td>
+		  <td contenteditable="false" id="addr" th:text="${customer.address}">Address</td>
+		  <td contenteditable="false" id="phnum"  th:text="${customer.phoneNumber}">Phone number</td>		  		  
+		  <td contenteditable="false" id="amt"  th:text="${customer.amount}">Amount</td>
+		  
+		  <td><input type="button" id="updateButton" value="update" th:onclick="'makeUpdate('+ *{customer.customerId} + ')'"></td>
+		  <td><input type="button" id="saveButton" value="save" disabled th:onclick="'saveIt('+ *{customer.customerId} + ')'"></td>
+		  <td><input type="button" id="cancelButton" value="cancel" disabled th:onclick="'cancelIt('+ *{customer.customerId} + ')'"></td>
+		  <td><input type="button" id="deleteButton" value="delete" th:onclick="'makeDelete('+ *{customer.customerId} + ')'"></td>
+	    </tr>
+	    
+	</table>
+	
+	<br>
+	
+	<a href="#" th:href="@{/addCustomer}">Add Customer</a>
+	<a href="#" th:href="@{/customers}">Get all Customers</a>
+</body>
+</html>

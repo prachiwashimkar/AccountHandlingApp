@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Create Customer</title>
+	<link rel="stylesheet" th:href="@{/styles.css}">
+</head>
+<body>
+	<h1>Provide customer details</h1>
+	<form action="#" th:action=@{/addCustomer} th:object=${customer} method="post" >
+		<table>
+			<tr>
+				<td>Customers First name</td>
+				<td>
+					<input type="text" th:field="*{firstName}"/>
+					<label th:if="${#fields.hasErrors('firstName')}" th:class="'error'" >Enter First name</label>
+				</td>
+			</tr>
+			<tr>
+				<td>Customers Last name</td>
+				<td>
+					<input type="text" th:field="*{lastName}"/>
+					<label th:if="${#fields.hasErrors('lastName')}" th:class="'error'">Enter last name</label>
+				</td>
+			</tr>
+			<tr>
+				<td>Customers address</td>
+				<td>
+					<input type="text" th:field="*{address}"/>
+					<label th:if="${#fields.hasErrors('address')}" th:class="'error'">Enter address</label>
+				</td>
+			</tr>
+			<tr>
+				<td>Customers phoneNumber</td>
+				<td>
+					<input type="text" th:field="*{phoneNumber}"/>
+					<label th:if="${#fields.hasErrors('phoneNumber')}" th:class="'error'">Enter phone number</label>
+				</td>
+			</tr>
+			<tr>
+				<td>Customers amount</td>
+				<td>
+					<input type="text" th:field="*{amount}"/>
+					<label th:if="${#fields.hasErrors('amount')}" th:class="'error'">Enter amount</label>
+				</td>
+			</tr>
+			
+			<tr><td colspan="2">
+	              <input type="submit" th:value="Submit"/> 
+	              <input type="reset" th:value="Reset"/>
+	            </td>
+	        </tr>
+	        
+		</table>
+	</form>
+</body>
+</html>
